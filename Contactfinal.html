@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Russ Design Co.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,25 +18,14 @@
             color: #333;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        h1 {
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            color: #222;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-        }
-
-        .contact-methods {
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            color: #555;
+        .header {
+            width: 100%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            z-index: 1002;
         }
 
         .burger {
@@ -44,13 +34,23 @@
             left: 20px;
             font-size: 30px;
             cursor: pointer;
-            z-index: 1001;
             color: #333;
-            transition: color 0.3s ease;
+            transition: transform 0.3s ease;
+            z-index: 1001;
         }
 
         .burger.active {
-            color: white;
+            color: #333;
+        }
+
+        h1#decrypt-title {
+            font-size: 2.0em; /* Match main page */
+            color: #222;
+            font-family: 'Space+Mono', monospace;
+            letter-spacing: 2px;
+            margin: 0 auto;
+            flex-grow: 1;
+            text-align: center;
         }
 
         .nav-menu {
@@ -59,8 +59,8 @@
             left: -250px;
             width: 250px;
             height: 100%;
-            background: #333;
-            color: white;
+            background: #fff; /* White, matching main page */
+            color: #555; /* Dark grey text */
             padding: 60px 20px 20px;
             transition: left 0.3s ease;
             z-index: 1000;
@@ -71,7 +71,7 @@
         }
 
         .nav-menu a {
-            color: white;
+            color: #555; /* Dark grey text */
             text-decoration: none;
             display: block;
             padding: 15px 0;
@@ -79,7 +79,20 @@
         }
 
         .nav-menu a:hover {
-            color: #ddd;
+            color: #777; /* Lighter grey on hover */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .contact-methods {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #555; /* Match secondary text color */
         }
 
         .contact-info {
@@ -89,26 +102,48 @@
         .contact-info p {
             font-size: 1.2em;
             margin-bottom: 10px;
-            display: block; /* Ensure each <p> stacks vertically */
+            display: block;
         }
 
         #phone-number, #email-address {
-            font-family: 'Courier New', monospace;
+            font-family: 'Space Mono', monospace; /* Match title font */
             font-size: 1.5em;
-            color: #222;
+            color: #222; /* Match heading color */
             letter-spacing: 2px;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .header {
+                display: block;
+                padding: 15px 20px 0;
+            }
+
+            .burger {
+                position: fixed;
+                top: 15px;
+                left: 20px;
+            }
+
+            h1#decrypt-title {
+                margin: 60px 0 20px; /* Space below burger */
+                text-align: center;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="burger">☰</div>
+    <div class="header">
+        <div class="burger">☰</div>
+        <h1 id="decrypt-title">Contact</h1>
+    </div>
     <div class="nav-menu">
         <a href="index.html">Home</a>
-        <a href="contact.html">Contact</a>
+        <a href="contactfinal.html">Contact</a>
     </div>
 
     <div class="container">
-        <h1>Contact</h1>
         <div class="contact-methods">text call or email me here:</div>
         <div class="contact-info">
             <p id="phone-number">2155955012</p>
@@ -119,13 +154,18 @@
     <script>
         const burger = document.querySelector('.burger');
         const navMenu = document.querySelector('.nav-menu');
+        const titleElement = document.querySelector('#decrypt-title');
         const phoneElement = document.querySelector('#phone-number');
         const emailElement = document.querySelector('#email-address');
+        const finalTitleText = "Contact"; // Title text to scramble
         const phoneText = "2155955012";
         const emailText = "Brennonruss@gmail.com";
+        const titleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
         const phoneCharacters = "0123456789";
         const emailCharacters = "abcdefghijklmnopqrstuvwxyz@.";
+        let hasScrolled = false;
 
+        // Burger Menu Toggle
         burger.addEventListener('click', (e) => {
             navMenu.classList.toggle('active');
             burger.classList.toggle('active');
@@ -139,47 +179,52 @@
             }
         });
 
+        // Burger Hop on First Scroll
+        window.addEventListener('scroll', () => {
+            if (!hasScrolled && window.pageYOffset > 0) {
+                burger.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    burger.style.transform = 'translateY(0)';
+                }, 300);
+                hasScrolled = true;
+            }
+        });
+
+        // Scramble Animation Function (Unified for title, phone, email)
         function runScrambleSequence(element, finalText, characters) {
-            let currentText = finalText.split('');
-            let scrambleIntervals = Array(finalText.length).fill(null);
+            let currentText = Array(finalText.length).fill('');
+            let scrambleIntervals = [];
+            let index = 0;
 
-            function shuffle(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
+            for (let i = 0; i < finalText.length; i++) {
+                scrambleIntervals[i] = setInterval(() => {
+                    currentText[i] = characters[Math.floor(Math.random() * characters.length)];
+                    element.textContent = currentText.join('');
+                }, 30);
             }
 
-            function startScrambleCycle() {
-                for (let i = 0; i < finalText.length; i++) {
-                    if (scrambleIntervals[i]) clearInterval(scrambleIntervals[i]);
+            function stopScrambling() {
+                if (index < finalText.length) {
+                    clearInterval(scrambleIntervals[index]);
+                    currentText[index] = finalText[index];
+                    element.textContent = currentText.join('');
+                    index++;
+                    if (index < finalText.length) {
+                        setTimeout(stopScrambling, 200);
+                    } else {
+                        setTimeout(() => runScrambleSequence(element, finalText, characters), 2000);
+                    }
                 }
-
-                const indices = shuffle([...Array(finalText.length).keys()]);
-                indices.forEach((index, i) => {
-                    setTimeout(() => {
-                        scrambleIntervals[index] = setInterval(() => {
-                            currentText[index] = characters[Math.floor(Math.random() * characters.length)];
-                            element.textContent = currentText.join('');
-                        }, 30);
-                        setTimeout(() => {
-                            clearInterval(scrambleIntervals[index]);
-                            currentText[index] = finalText[index];
-                            element.textContent = currentText.join('');
-                        }, 3000);
-                    }, i * 3000);
-                });
-
-                setTimeout(startScrambleCycle, finalText.length * 3000);
             }
 
-            startScrambleCycle();
+            stopScrambling();
         }
 
         window.addEventListener('load', () => {
-            phoneElement.textContent = phoneText;
-            emailElement.textContent = emailText;
+            titleElement.textContent = '';
+            phoneElement.textContent = '';
+            emailElement.textContent = '';
+            runScrambleSequence(titleElement, finalTitleText, titleCharacters);
             runScrambleSequence(phoneElement, phoneText, phoneCharacters);
             runScrambleSequence(emailElement, emailText, emailCharacters);
         });
