@@ -44,9 +44,9 @@
         }
 
         h1#decrypt-title {
-            font-size: 2.0em; /* Match main page */
+            font-size: 2.0em;
             color: #222;
-            font-family: 'Space+Mono', monospace;
+            font-family: 'Space Mono', monospace;
             letter-spacing: 2px;
             margin: 0 auto;
             flex-grow: 1;
@@ -59,8 +59,8 @@
             left: -250px;
             width: 250px;
             height: 100%;
-            background: #fff; /* White, matching main page */
-            color: #555; /* Dark grey text */
+            background: #fff;
+            color: #555;
             padding: 60px 20px 20px;
             transition: left 0.3s ease;
             z-index: 1000;
@@ -71,7 +71,7 @@
         }
 
         .nav-menu a {
-            color: #555; /* Dark grey text */
+            color: #555;
             text-decoration: none;
             display: block;
             padding: 15px 0;
@@ -79,7 +79,7 @@
         }
 
         .nav-menu a:hover {
-            color: #777; /* Lighter grey on hover */
+            color: #777;
         }
 
         .container {
@@ -92,7 +92,7 @@
         .contact-methods {
             margin-bottom: 20px;
             font-size: 1.2em;
-            color: #555; /* Match secondary text color */
+            color: #555;
         }
 
         .contact-info {
@@ -106,13 +106,12 @@
         }
 
         #phone-number, #email-address {
-            font-family: 'Space Mono', monospace; /* Match title font */
+            font-family: 'Space Mono', monospace;
             font-size: 1.5em;
-            color: #222; /* Match heading color */
+            color: #222;
             letter-spacing: 2px;
         }
 
-        /* Mobile Styles */
         @media (max-width: 768px) {
             .header {
                 display: block;
@@ -126,7 +125,7 @@
             }
 
             h1#decrypt-title {
-                margin: 60px 0 20px; /* Space below burger */
+                margin: 60px 0 20px;
                 text-align: center;
                 width: 100%;
             }
@@ -154,13 +153,10 @@
     <script>
         const burger = document.querySelector('.burger');
         const navMenu = document.querySelector('.nav-menu');
-        const titleElement = document.querySelector('#decrypt-title');
         const phoneElement = document.querySelector('#phone-number');
         const emailElement = document.querySelector('#email-address');
-        const finalTitleText = "Contact"; // Title text to scramble
         const phoneText = "2155955012";
         const emailText = "Brennonruss@gmail.com";
-        const titleCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
         const phoneCharacters = "0123456789";
         const emailCharacters = "abcdefghijklmnopqrstuvwxyz@.";
         let hasScrolled = false;
@@ -190,43 +186,50 @@
             }
         });
 
-        // Scramble Animation Function (Unified for title, phone, email)
-        function runScrambleSequence(element, finalText, characters) {
-            let currentText = Array(finalText.length).fill('');
-            let scrambleIntervals = [];
-            let index = 0;
+        // Original Contact Page Scramble Animation (Phone and Email)
+        function runContactScrambleSequence(element, finalText, characters) {
+            let currentText = finalText.split('');
+            let scrambleIntervals = Array(finalText.length).fill(null);
 
-            for (let i = 0; i < finalText.length; i++) {
-                scrambleIntervals[i] = setInterval(() => {
-                    currentText[i] = characters[Math.floor(Math.random() * characters.length)];
-                    element.textContent = currentText.join('');
-                }, 30);
-            }
-
-            function stopScrambling() {
-                if (index < finalText.length) {
-                    clearInterval(scrambleIntervals[index]);
-                    currentText[index] = finalText[index];
-                    element.textContent = currentText.join('');
-                    index++;
-                    if (index < finalText.length) {
-                        setTimeout(stopScrambling, 200);
-                    } else {
-                        setTimeout(() => runScrambleSequence(element, finalText, characters), 2000);
-                    }
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
                 }
+                return array;
             }
 
-            stopScrambling();
+            function startScrambleCycle() {
+                for (let i = 0; i < finalText.length; i++) {
+                    if (scrambleIntervals[i]) clearInterval(scrambleIntervals[i]);
+                }
+
+                const indices = shuffle([...Array(finalText.length).keys()]);
+                indices.forEach((index, i) => {
+                    setTimeout(() => {
+                        scrambleIntervals[index] = setInterval(() => {
+                            currentText[index] = characters[Math.floor(Math.random() * characters.length)];
+                            element.textContent = currentText.join('');
+                        }, 30);
+                        setTimeout(() => {
+                            clearInterval(scrambleIntervals[index]);
+                            currentText[index] = finalText[index];
+                            element.textContent = currentText.join('');
+                        }, 3000);
+                    }, i * 3000);
+                });
+
+                setTimeout(startScrambleCycle, finalText.length * 3000);
+            }
+
+            startScrambleCycle();
         }
 
         window.addEventListener('load', () => {
-            titleElement.textContent = '';
             phoneElement.textContent = '';
             emailElement.textContent = '';
-            runScrambleSequence(titleElement, finalTitleText, titleCharacters);
-            runScrambleSequence(phoneElement, phoneText, phoneCharacters);
-            runScrambleSequence(emailElement, emailText, emailCharacters);
+            runContactScrambleSequence(phoneElement, phoneText, phoneCharacters);
+            runContactScrambleSequence(emailElement, emailText, emailCharacters);
         });
     </script>
 </body>
