@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Design Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -26,28 +26,27 @@
             justify-content: space-between;
             padding: 15px 20px;
             z-index: 1002;
-            /* Removed position: fixed so it scrolls with the page */
         }
 
         .burger {
-            position: fixed; /* Always fixed, independent of header */
+            position: fixed;
             top: 15px;
             left: 20px;
             font-size: 30px;
             cursor: pointer;
             color: #333;
-            transition: transform 0.3s ease; /* For subtle hop on first scroll */
+            transition: transform 0.3s ease;
             z-index: 1001;
         }
 
         .burger.active {
-            color: #333; /* Dark grey when active */
+            color: #333;
         }
 
         h1#decrypt-title {
-            font-size: 2.25em;
+            font-size: 2.0em;
             color: #222;
-            font-family: 'Courier New', monospace;
+            font-family: 'Space Mono', monospace; /* Changed to Space Mono */
             letter-spacing: 2px;
             margin: 0 auto;
             flex-grow: 1;
@@ -60,8 +59,8 @@
             left: -250px;
             width: 250px;
             height: 100%;
-            background: #fff; /* White background */
-            color: #555; /* Dark grey text */
+            background: #fff;
+            color: #555;
             padding: 60px 20px 20px;
             transition: left 0.3s ease;
             z-index: 1000;
@@ -72,7 +71,7 @@
         }
 
         .nav-menu a {
-            color: #555; /* Dark grey text */
+            color: #555;
             text-decoration: none;
             display: block;
             padding: 15px 0;
@@ -80,12 +79,12 @@
         }
 
         .nav-menu a:hover {
-            color: #777; /* Lighter grey on hover */
+            color: #777;
         }
 
         .container {
             max-width: 1200px;
-            margin: 0 auto; /* No top margin since header scrolls */
+            margin: 0 auto;
             padding: 40px 20px;
             text-align: center;
         }
@@ -182,7 +181,25 @@
             cursor: pointer;
         }
 
+        /* Mobile Styles */
         @media (max-width: 768px) {
+            .header {
+                display: block; /* Stack items vertically */
+                padding: 15px 20px 0; /* Reduce bottom padding */
+            }
+
+            .burger {
+                position: fixed;
+                top: 15px;
+                left: 20px;
+            }
+
+            h1#decrypt-title {
+                margin: 60px 0 20px; /* Space below burger, above content */
+                text-align: center;
+                width: 100%;
+            }
+
             .gallery {
                 grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 0;
@@ -217,7 +234,7 @@
     </div>
 
     <div class="container">
-        <h2>logos + motion | branding | ui/ux| web</h2>
+        <h2>Logo+Motion | Branding | UI/UX | Web</h2>
         <div class="gallery">
             <div class="gallery-item">
                 <a href="https://sightreadingapp.com" target="_blank" class="link-override">
@@ -326,11 +343,11 @@
         // Burger Hop on First Scroll
         window.addEventListener('scroll', () => {
             if (!hasScrolled && window.pageYOffset > 0) {
-                burger.style.transform = 'translateY(-10px)'; // Subtle hop up
+                burger.style.transform = 'translateY(-10px)';
                 setTimeout(() => {
-                    burger.style.transform = 'translateY(0)'; // Settle back
+                    burger.style.transform = 'translateY(0)';
                 }, 300);
-                hasScrolled = true; // Only hop once
+                hasScrolled = true;
             }
         });
 
