@@ -18,41 +18,40 @@
             color: #333;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2.0em;
-            color: #222;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 1.2em;
-            color: #555;
+        .header {
+            width: 100%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            z-index: 1002;
+            /* Removed position: fixed so it scrolls with the page */
         }
 
         .burger {
-            position: fixed;
+            position: fixed; /* Always fixed, independent of header */
             top: 15px;
             left: 20px;
             font-size: 30px;
             cursor: pointer;
-            z-index: 1001;
             color: #333;
-            transition: color 0.3s ease;
+            transition: transform 0.3s ease; /* For subtle hop on first scroll */
+            z-index: 1001;
         }
 
         .burger.active {
-            color: white;
+            color: #333; /* Dark grey when active */
+        }
+
+        h1#decrypt-title {
+            font-size: 2.0em;
+            color: #222;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            margin: 0 auto;
+            flex-grow: 1;
+            text-align: center;
         }
 
         .nav-menu {
@@ -61,8 +60,8 @@
             left: -250px;
             width: 250px;
             height: 100%;
-            background: #333;
-            color: white;
+            background: #fff; /* White background */
+            color: #555; /* Dark grey text */
             padding: 60px 20px 20px;
             transition: left 0.3s ease;
             z-index: 1000;
@@ -73,7 +72,7 @@
         }
 
         .nav-menu a {
-            color: white;
+            color: #555; /* Dark grey text */
             text-decoration: none;
             display: block;
             padding: 15px 0;
@@ -81,7 +80,20 @@
         }
 
         .nav-menu a:hover {
-            color: #ddd;
+            color: #777; /* Lighter grey on hover */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto; /* No top margin since header scrolls */
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 40px;
+            font-size: 1.2em;
+            color: #555;
         }
 
         .gallery {
@@ -137,18 +149,75 @@
             text-decoration: none;
             color: inherit;
         }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 0;
+            }
+
+            .gallery-item {
+                border-radius: 0;
+                box-shadow: none;
+                height: auto;
+                aspect-ratio: 1 / 1;
+                transition: none;
+            }
+
+            .gallery-item:hover {
+                transform: none;
+            }
+
+            .caption {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="burger">☰</div>
+    <div class="header">
+        <div class="burger">☰</div>
+        <h1 id="decrypt-title">russ design co.</h1>
+    </div>
     <div class="nav-menu">
         <a href="index.html">Home</a>
         <a href="contactfinal.html">Contact</a>
     </div>
 
     <div class="container">
-        <h1 id="decrypt-title">russ design co.</h1>
-        <h2>Logo+Motion | Branding | UI/UX | Web</h2>
+        <h2>logos + motion | branding | ui/ux| web</h2>
         <div class="gallery">
             <div class="gallery-item">
                 <a href="https://sightreadingapp.com" target="_blank" class="link-override">
@@ -162,7 +231,7 @@
             </div>
             <div class="gallery-item">
                 <video autoplay muted loop>
-                    <source src="https://i.imgur.com/l6gDvpr.mp4">
+                    <source src="https://i.imgur.com/l6gDvpr.mp4" type="video/mp4">
                 </video>
                 <div class="caption">Fathoms Brewing Co. - Food & Drink</div>
             </div>
@@ -223,13 +292,24 @@
         </div>
     </div>
 
+    <div class="lightbox">
+        <span class="close-lightbox">×</span>
+        <img class="lightbox-content" src="" alt="Lightbox Image">
+    </div>
+
     <script>
         const burger = document.querySelector('.burger');
         const navMenu = document.querySelector('.nav-menu');
         const titleElement = document.querySelector('#decrypt-title');
         const finalText = "russ design co.";
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const lightbox = document.querySelector('.lightbox');
+        const lightboxContent = document.querySelector('.lightbox-content');
+        const closeLightbox = document.querySelector('.close-lightbox');
+        let hasScrolled = false;
 
+        // Burger Menu Toggle
         burger.addEventListener('click', (e) => {
             navMenu.classList.toggle('active');
             burger.classList.toggle('active');
@@ -243,6 +323,18 @@
             }
         });
 
+        // Burger Hop on First Scroll
+        window.addEventListener('scroll', () => {
+            if (!hasScrolled && window.pageYOffset > 0) {
+                burger.style.transform = 'translateY(-10px)'; // Subtle hop up
+                setTimeout(() => {
+                    burger.style.transform = 'translateY(0)'; // Settle back
+                }, 300);
+                hasScrolled = true; // Only hop once
+            }
+        });
+
+        // Title Scramble Animation
         function runScrambleSequence() {
             let currentText = Array(finalText.length).fill('');
             let scrambleIntervals = [];
@@ -271,6 +363,40 @@
 
             stopScrambling();
         }
+
+        // Lightbox Functionality (Mobile Only)
+        galleryItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (window.innerWidth > 768) return;
+                e.preventDefault();
+                const img = item.querySelector('img');
+                const video = item.querySelector('video');
+                
+                if (item.querySelector('.link-override')) {
+                    window.open(item.querySelector('.link-override').href, '_blank');
+                    return;
+                }
+
+                lightbox.classList.add('active');
+                if (img) {
+                    lightboxContent.src = img.src;
+                    lightboxContent.style.display = 'block';
+                    lightbox.innerHTML = `<span class="close-lightbox">×</span><img class="lightbox-content" src="${img.src}" alt="Lightbox Image">`;
+                } else if (video) {
+                    lightbox.innerHTML = `<span class="close-lightbox">×</span><video class="lightbox-content" autoplay muted loop><source src="${video.querySelector('source').src}" type="video/mp4"></video>`;
+                }
+                document.querySelector('.close-lightbox').addEventListener('click', closeLightboxHandler);
+            });
+        });
+
+        function closeLightboxHandler() {
+            lightbox.classList.remove('active');
+        }
+
+        closeLightbox.addEventListener('click', closeLightboxHandler);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightboxHandler();
+        });
 
         window.addEventListener('load', () => {
             titleElement.textContent = '';
