@@ -46,7 +46,7 @@
         h1#decrypt-title {
             font-size: 2.0em;
             color: #222;
-            font-family: 'Space Mono', monospace; /* Changed to Space Mono */
+            font-family: 'Space Mono', monospace;
             letter-spacing: 2px;
             margin: 0 auto;
             flex-grow: 1;
@@ -117,12 +117,25 @@
             z-index: 1;
         }
 
+        .gallery-item a.link-override {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            text-decoration: none;
+            color: inherit;
+        }
+
         .gallery-item img,
         .gallery-item video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
+            position: relative;
+            z-index: 1;
         }
 
         .caption {
@@ -135,18 +148,11 @@
             padding: 10px;
             transform: translateY(100%);
             transition: transform 0.3s ease;
+            z-index: 3;
         }
 
         .gallery-item:hover .caption {
             transform: translateY(0);
-        }
-
-        .gallery-item .link-override {
-            display: block;
-            width: 100%;
-            height: 100%;
-            text-decoration: none;
-            color: inherit;
         }
 
         .lightbox {
@@ -184,8 +190,8 @@
         /* Mobile Styles */
         @media (max-width: 768px) {
             .header {
-                display: block; /* Stack items vertically */
-                padding: 15px 20px 0; /* Reduce bottom padding */
+                display: block;
+                padding: 15px 20px 0;
             }
 
             .burger {
@@ -195,7 +201,7 @@
             }
 
             h1#decrypt-title {
-                margin: 60px 0 20px; /* Space below burger, above content */
+                margin: 60px 0 20px;
                 text-align: center;
                 width: 100%;
             }
@@ -252,15 +258,15 @@
                 </video>
                 <div class="caption">fathoms brewing co. - brewery branding</div>
             </div>
-                <div class="gallery-item">
+            <div class="gallery-item">
                 <img src="https://i.imgur.com/DOhndrh.png" alt="Design 1">
                 <div class="caption">glxy - professional services</div>
             </div>
-                 <div class="gallery-item">
+            <div class="gallery-item">
                 <img src="https://i.imgur.com/Z2nezNO.png" alt="Design 1">
                 <div class="caption">brgr planet - illustration</div>
             </div>
-                    <div class="gallery-item">
+            <div class="gallery-item">
                 <img src="https://i.imgur.com/QDWloUJ.jpg" alt="Design 1">
                 <div class="caption">luna pizzeria - food and drink</div>
             </div>
@@ -285,11 +291,12 @@
                 <div class="caption">carbon - encrypted messaging</div>
             </div>
             <div class="gallery-item">
-            <a href="https://www.instagram.com/hugofuentes_photography/" target="_blank" class="link-override">
-                <video autoplay muted loop>
-                    <source src="https://i.imgur.com/regJlod.mp4" type="video/mp4">
-                </video>
-                <div class="caption">hugo fuentes - personal branding</div>
+                <a href="https://www.instagram.com/hugofuentes_photography/" target="_blank" class="link-override">
+                    <video autoplay muted loop>
+                        <source src="https://i.imgur.com/regJlod.mp4" type="video/mp4">
+                    </video>
+                    <div class="caption">hugo fuentes - personal branding</div>
+                </a>
             </div>
             <div class="gallery-item">
                 <img src="https://i.imgur.com/UDhW3QS.png" alt="Design 3">
@@ -300,9 +307,10 @@
                 <div class="caption">play with words - healthcare</div>
             </div>
             <div class="gallery-item">
-              <a href="https://a.co/d/2WstaXs" target="_blank" class="link-override">
-                <img src="https://i.imgur.com/LjFmgvG.jpg" alt="Design 3">
-                 <div class="caption">'the ancient' - arts & entertainment</div>
+                <a href="https://a.co/d/2WstaXs" target="_blank" class="link-override">
+                    <img src="https://i.imgur.com/LjFmgvG.jpg" alt="Design 3">
+                    <div class="caption">'the ancient' - arts & entertainment</div>
+                </a>
             </div>
             <div class="gallery-item">
                 <img src="https://i.imgur.com/REGnCRU.png" alt="Design 3">
@@ -336,7 +344,6 @@
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
         const galleryItems = document.querySelectorAll('.gallery-item');
         const lightbox = document.querySelector('.lightbox');
-        const lightboxContent = document.querySelector('.lightbox-content');
         const closeLightbox = document.querySelector('.close-lightbox');
         let hasScrolled = false;
 
@@ -395,23 +402,26 @@
             stopScrambling();
         }
 
-        // Lightbox Functionality (Mobile Only)
+        // Lightbox and Link Functionality
         galleryItems.forEach(item => {
             item.addEventListener('click', (e) => {
-                if (window.innerWidth > 768) return;
-                e.preventDefault();
+                const link = item.querySelector('.link-override');
                 const img = item.querySelector('img');
                 const video = item.querySelector('video');
-                
-                if (item.querySelector('.link-override')) {
-                    window.open(item.querySelector('.link-override').href, '_blank');
+
+                // If there's a link, follow it regardless of screen size
+                if (link) {
+                    e.preventDefault();
+                    window.open(link.href, '_blank');
                     return;
                 }
 
+                // Lightbox only activates on mobile for non-linked items
+                if (window.innerWidth > 768) return;
+
+                e.preventDefault();
                 lightbox.classList.add('active');
                 if (img) {
-                    lightboxContent.src = img.src;
-                    lightboxContent.style.display = 'block';
                     lightbox.innerHTML = `<span class="close-lightbox">×</span><img class="lightbox-content" src="${img.src}" alt="Lightbox Image">`;
                 } else if (video) {
                     lightbox.innerHTML = `<span class="close-lightbox">×</span><video class="lightbox-content" autoplay muted loop><source src="${video.querySelector('source').src}" type="video/mp4"></video>`;
