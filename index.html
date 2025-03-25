@@ -54,7 +54,7 @@
             color: #222;
             font-family: 'Space Mono', monospace;
             letter-spacing: 2px;
-            margin: 0;
+            margin: 0 0 10px 0; /* Small bottom margin to reduce gap */
             text-align: center;
         }
 
@@ -90,7 +90,7 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 20px 20px; /* Reduced top padding from 40px to 20px */
             text-align: center;
         }
 
@@ -210,9 +210,13 @@
             }
 
             h1#decrypt-title {
-                margin: 20px 0 20px;
+                margin: 20px 0 10px; /* Reduced bottom margin from 20px to 10px */
                 text-align: center;
                 width: 100%;
+            }
+
+            .container {
+                padding: 10px 20px; /* Reduced top padding from 40px to 10px */
             }
 
             .gallery {
